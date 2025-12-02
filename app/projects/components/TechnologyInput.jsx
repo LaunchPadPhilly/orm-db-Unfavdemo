@@ -30,30 +30,38 @@ export default function TechnologyInput({ technologies = [], onChange, error }) 
 
   return (
     <div>
-      <div className="mb-2">
-        <input
-          type="text"
-          placeholder="Type a technology"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
-          className={`w-full px-3 py-2 border rounded ${error ? 'border-red-500' : 'border-gray-300'}`}
-        />
-        <button
-          type="button"
-          onClick={() => handleAdd(inputValue.trim())}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Add
-        </button>
+      <div className="mb-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Type a technology and press Enter"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className={`flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all text-black placeholder-gray-500 ${
+              error 
+                ? 'border-red-500 focus:ring-red-200' 
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+            }`}
+          />
+          <button
+            type="button"
+            onClick={() => handleAdd(inputValue.trim())}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+          >
+            Add
+          </button>
+        </div>
       </div>
       
       {error && (
-        <p className="text-red-500 text-sm mb-2">{error}</p>
+        <p className="text-red-500 text-sm mb-3 flex items-center gap-1">
+          <span>⚠️</span> {error}
+        </p>
       )}
 
-      <div className="mb-4">
-        <p className="text-sm font-medium mb-2">Quick Add:</p>
+      <div className="mb-6">
+        <p className="text-sm font-semibold mb-3 text-black">Quick Add:</p>
         <div className="flex flex-wrap gap-2">
           {predefinedTechs.map(tech => (
             <button
@@ -61,10 +69,10 @@ export default function TechnologyInput({ technologies = [], onChange, error }) 
               type="button"
               onClick={() => handleAdd(tech)}
               disabled={technologies.includes(tech)}
-              className={`px-3 py-1 rounded text-sm ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all text-black ${
                 technologies.includes(tech)
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gray-200 hover:bg-gray-300'
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-gray-100 to-gray-200 hover:from-blue-100 hover:to-indigo-100 hover:text-blue-700 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 border border-gray-300'
               }`}
             >
               {tech}
@@ -74,23 +82,26 @@ export default function TechnologyInput({ technologies = [], onChange, error }) 
       </div>
 
       {technologies.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {technologies.map(tech => (
-            <span
-              key={tech}
-              className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-            >
-              {tech}
-              <button
-                type="button"
-                onClick={() => handleRemove(tech)}
-                aria-label="Remove"
-                className="ml-2 text-blue-600 hover:text-blue-800"
+        <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-100">
+          <p className="text-sm font-semibold mb-3 text-black">Selected Technologies:</p>
+          <div className="flex flex-wrap gap-2">
+            {technologies.map(tech => (
+              <span
+                key={tech}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full text-sm font-semibold shadow-md"
               >
-                ×
-              </button>
-            </span>
-          ))}
+                {tech}
+                <button
+                  type="button"
+                  onClick={() => handleRemove(tech)}
+                  aria-label="Remove"
+                  className="ml-2 text-white hover:text-red-200 transition-colors font-bold text-lg leading-none"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>
