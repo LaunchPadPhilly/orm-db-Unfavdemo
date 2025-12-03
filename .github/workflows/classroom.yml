@@ -1,7 +1,8 @@
 name: Autograding Tests
 on:
-  - push
-  - repository_dispatch
+  push:
+  repository_dispatch:
+    types: []
 
 permissions:
   checks: write
