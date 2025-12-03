@@ -182,7 +182,7 @@ describe('API Routes - Projects', () => {
       expect(response.status).toBe(400);
       
       const data = await response.json();
-      expect(data.error).toBe('Invalid project ID');
+      expect(data.error).toBe('Invalid ID');
     });
   });
 

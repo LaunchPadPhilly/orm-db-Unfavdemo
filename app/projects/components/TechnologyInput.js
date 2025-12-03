@@ -107,3 +107,4 @@ export default function TechnologyInput({ technologies = [], onChange, error }) 
     </div>
   );
 }
+

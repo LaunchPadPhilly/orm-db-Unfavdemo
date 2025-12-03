@@ -7,7 +7,7 @@ export async function GET(request, { params }) {
     
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: 'Invalid project ID' },
+        { error: 'Invalid ID' },
         { status: 400 }
       );
     }
@@ -39,7 +39,7 @@ export async function PUT(request, { params }) {
     
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: 'Invalid project ID' },
+        { error: 'Invalid ID' },
         { status: 400 }
       );
     }
@@ -109,7 +109,7 @@ export async function DELETE(request, { params }) {
     
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: 'Invalid project ID' },
+        { error: 'Invalid ID' },
         { status: 400 }
       );
     }
