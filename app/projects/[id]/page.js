@@ -16,7 +16,7 @@ async function getProject(id) {
 }
 
 export default async function ProjectDetail({ params }) {
-  const { id } = params;
+  const { id } = await params;
   const projectId = parseInt(id);
 
   if (isNaN(projectId)) {
