@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import ProjectForm from './components/ProjectForm';
+import ProjectForm from './components/ProjectForm.jsx';
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);

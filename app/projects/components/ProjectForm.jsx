@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import TechnologyInput from './TechnologyInput';
+import TechnologyInput from './TechnologyInput.jsx';
 
 export default function ProjectForm({ onSubmit, onCancel, isOpen }) {
   const [title, setTitle] = useState('');

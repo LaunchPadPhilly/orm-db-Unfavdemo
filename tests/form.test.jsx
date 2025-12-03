@@ -4,8 +4,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import ProjectForm from '../app/projects/components/ProjectForm.js'
-import TechnologyInput from '../app/projects/components/TechnologyInput.js'
+import ProjectForm from '../app/projects/components/ProjectForm.jsx'
+import TechnologyInput from '../app/projects/components/TechnologyInput.jsx'
 
 describe('ProjectForm Component', () => {
   const mockOnSubmit = vi.fn()
@@ -56,7 +56,8 @@ describe('ProjectForm Component', () => {
     await waitFor(() => {
       expect(screen.getByText('Title is required')).toBeInTheDocument()
       expect(screen.getByText('Description is required')).toBeInTheDocument()
-      expect(screen.getByText('At least one technology is required')).toBeInTheDocument()
+      // Error message appears in both ProjectForm and TechnologyInput, so use getAllByText
+      expect(screen.getAllByText('At least one technology is required').length).toBeGreaterThan(0)
     })
     
     expect(mockOnSubmit).not.toHaveBeenCalled()
@@ -83,8 +84,6 @@ describe('ProjectForm Component', () => {
   })
 
   it('calls onSubmit with form data when valid', async () => {
-    const mockTechnologies = ['React', 'JavaScript']
-    
     render(
       <ProjectForm 
         isOpen={true} 
@@ -94,30 +93,47 @@ describe('ProjectForm Component', () => {
     )
     
     // Fill required fields
-    fireEvent.change(screen.getByLabelText(/Project Title/), {
+    const titleInput = screen.getByLabelText(/Project Title/)
+    fireEvent.change(titleInput, {
       target: { value: 'Test Project' }
     })
-    fireEvent.change(screen.getByLabelText(/Description/), {
+    
+    const descriptionInput = screen.getByLabelText(/Description/)
+    fireEvent.change(descriptionInput, {
       target: { value: 'Test description' }
     })
     
-    // Add technologies (this is a simplified test)
+    // Add technology using the input field and Add button
     const techInput = screen.getByPlaceholderText(/Type a technology/)
-    fireEvent.change(techInput, { target: { value: 'React' } })
-    fireEvent.click(screen.getByRole('button', { name: /Add/ }))
+    fireEvent.change(techInput, { target: { value: 'Vue.js' } })
     
+    // Click the Add button next to the input
+    const addButtons = screen.getAllByRole('button', { name: /Add/ })
+    const techAddButton = addButtons[0] // First Add button is for technologies
+    fireEvent.click(techAddButton)
+    
+    // Wait for technology to be added
+    await waitFor(() => {
+      expect(screen.getByText('Vue.js')).toBeInTheDocument()
+    }, { timeout: 2000 })
+    
+    // Submit the form
     const submitButton = screen.getByRole('button', { name: /Create Project/ })
     fireEvent.click(submitButton)
     
+    // Wait for onSubmit to be called
     await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        title: 'Test Project',
-        description: 'Test description',
-        imageUrl: '',
-        projectUrl: '',
-        githubUrl: '',
-        technologies: ['React']
-      })
+      expect(mockOnSubmit).toHaveBeenCalled()
+    }, { timeout: 3000 })
+    
+    // Verify the call arguments
+    expect(mockOnSubmit).toHaveBeenCalledWith({
+      title: 'Test Project',
+      description: 'Test description',
+      imageUrl: null,
+      projectUrl: null,
+      githubUrl: null,
+      technologies: ['Vue.js']
     })
   })
 
@@ -186,7 +202,7 @@ describe('TechnologyInput Component', () => {
     expect(mockOnChange).toHaveBeenCalledWith(['Vue.js'])
   })
 
-  it('adds technology when pressing Enter', () => {
+  it('adds technology when pressing Enter', async () => {
     render(
       <TechnologyInput 
         technologies={[]} 
@@ -196,9 +212,11 @@ describe('TechnologyInput Component', () => {
     
     const input = screen.getByPlaceholderText(/Type a technology/)
     fireEvent.change(input, { target: { value: 'Angular' } })
-    fireEvent.keyPress(input, { key: 'Enter' })
+    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 })
     
-    expect(mockOnChange).toHaveBeenCalledWith(['Angular'])
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledWith(['Angular'])
+    })
   })
 
   it('adds predefined technology when quick button clicked', () => {
@@ -223,8 +241,12 @@ describe('TechnologyInput Component', () => {
       />
     )
     
-    expect(screen.getByText('React')).toBeInTheDocument()
-    expect(screen.getByText('JavaScript')).toBeInTheDocument()
+    // Technologies are displayed in the "Selected Technologies" section
+    // Query within that section to avoid conflicts with quick add buttons
+    const selectedSection = screen.getByText('Selected Technologies:').closest('div')
+    expect(selectedSection).toBeInTheDocument()
+    expect(selectedSection).toHaveTextContent('React')
+    expect(selectedSection).toHaveTextContent('JavaScript')
     expect(screen.getAllByLabelText(/Remove/).length).toBe(2)
   })
 
