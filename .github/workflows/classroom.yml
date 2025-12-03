@@ -12,7 +12,7 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+       DATABASE_URL: {{ secrets.DATABASE_URL }}
     if: github.actor != 'github-classroom[bot]'
     steps:
       - name: Checkout code
@@ -24,7 +24,7 @@ jobs:
           node-version: '20'
           
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Prisma Generate 
         run: npx prisma generate
