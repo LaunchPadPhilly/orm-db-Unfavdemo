@@ -30,8 +30,41 @@ jobs:
       - name: Prisma Generate
         run: npx prisma generate
 
+      - name: Push database schema
+        run: npx prisma db push --skip-generate
+
+      - name: Start Next.js dev server
+        run: |
+          npm run dev > /tmp/nextjs.log 2>&1 &
+          echo $! > /tmp/nextjs.pid
+        env:
+          PORT: 3000
+
+      - name: Wait for server to be ready
+        run: |
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:3000/api/projects > /dev/null 2>&1; then
+              echo "Server is ready!"
+              exit 0
+            fi
+            echo "Attempt $i: Server not ready yet, waiting..."
+            sleep 2
+          done
+          echo "Server failed to start in time"
+          cat /tmp/nextjs.log
+          exit 1
+
       - name: Run tests
         run: npm test
+
+      - name: Stop dev server
+        if: always()
+        run: |
+          if [ -f /tmp/nextjs.pid ]; then
+            kill $(cat /tmp/nextjs.pid) || true
+          fi
+          pkill -f "next dev" || true
 
       - name: Run build
         run: npm run build
