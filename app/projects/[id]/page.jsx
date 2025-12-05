@@ -42,7 +42,7 @@ export default async function ProjectDetail({ params }) {
         </Link>
 
         {/* Project header */}
-        <div className="card p-8 md:p-12 mb-8">
+        <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-8 md:p-12 mb-8 hover:-translate-y-0.5">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-black">
             {project.title}
           </h1>
@@ -61,7 +61,7 @@ export default async function ProjectDetail({ params }) {
         {/* Project image */}
         {project.imageUrl && (
           <div className="mb-8">
-            <div className="card overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden hover:-translate-y-0.5">
               <Image
                 src={project.imageUrl}
                 alt={project.title}
@@ -77,7 +77,7 @@ export default async function ProjectDetail({ params }) {
         <div className="grid md:grid-cols-3 gap-8">
           {/* Main content */}
           <div className="md:col-span-2">
-            <div className="card p-8 md:p-10">
+            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-8 md:p-10 hover:-translate-y-0.5">
               <h2 className="text-3xl font-bold mb-6 text-black">About This Project</h2>
               <p className="text-lg text-black leading-relaxed mb-8 whitespace-pre-line">
                 {project.description}
@@ -101,7 +101,7 @@ export default async function ProjectDetail({ params }) {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Project links */}
-            <div className="card p-6">
+            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 hover:-translate-y-0.5">
               <h3 className="text-xl font-bold mb-6 text-black">Project Links</h3>
               <div className="space-y-3">
                 {project.projectUrl && (
@@ -131,7 +131,7 @@ export default async function ProjectDetail({ params }) {
             </div>
 
             {/* Project info */}
-            <div className="card p-6">
+            <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 hover:-translate-y-0.5">
               <h3 className="text-xl font-bold mb-6 text-black">Project Info</h3>
               <div className="space-y-4 text-sm">
                 <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
@@ -168,3 +168,4 @@ export default async function ProjectDetail({ params }) {
     </div>
   );
 }
+

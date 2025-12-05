@@ -144,47 +144,61 @@ describe('Database Schema and Operations', () => {
 
   describe('Database Queries', () => {
     it('should fetch all projects with findMany', async () => {
+      // Use a unique identifier to avoid cleanup conflicts
+      const uniqueId = Date.now();
+      const baseTitle = `Test DB Query ${uniqueId}`;
+      
       // Create test projects first
-      await prisma.project.createMany({
-        data: [
-          {
-            title: "Test DB Query Project 1",
-            description: "First query test project",
-            technologies: ["React"]
-          },
-          {
-            title: "Test DB Query Project 2",
-            description: "Second query test project",
-            technologies: ["Vue.js"]
-          },
-          {
-            title: "Test DB Query Project 3",
-            description: "Third query test project",
-            technologies: ["Angular"]
-          }
-        ]
+      const project1 = await prisma.project.create({
+        data: {
+          title: `${baseTitle} Project 1`,
+          description: "First query test project",
+          technologies: ["React"]
+        }
       });
+      
+      const project2 = await prisma.project.create({
+        data: {
+          title: `${baseTitle} Project 2`,
+          description: "Second query test project",
+          technologies: ["Vue.js"]
+        }
+      });
+      
+      const project3 = await prisma.project.create({
+        data: {
+          title: `${baseTitle} Project 3`,
+          description: "Third query test project",
+          technologies: ["Angular"]
+        }
+      });
+
+      // Verify projects were created
+      expect(project1.id).toBeDefined();
+      expect(project2.id).toBeDefined();
+      expect(project3.id).toBeDefined();
 
       const projects = await prisma.project.findMany({
         where: {
-          title: { contains: "Test DB Query" }
+          title: { contains: baseTitle }
         }
       });
 
       expect(projects.length).toBeGreaterThanOrEqual(3);
-      expect(projects.every(p => p.title.includes("Test DB Query"))).toBe(true);
+      expect(projects.every(p => p.title.includes(baseTitle))).toBe(true);
     });
 
     it('should fetch projects ordered by creation date (newest first)', async () => {
       // Use a unique identifier that won't conflict with cleanup
       const uniqueId = Date.now();
-      const title1 = `Order Test ${uniqueId} First`;
-      const title2 = `Order Test ${uniqueId} Second`;
+      const baseTitle = `Test DB Order ${uniqueId}`;
+      const title1 = `${baseTitle} First`;
+      const title2 = `${baseTitle} Second`;
 
       // Clean up any existing test data first
       await prisma.project.deleteMany({
         where: {
-          title: { contains: `Order Test ${uniqueId}` }
+          title: { contains: baseTitle }
         }
       });
 
@@ -195,6 +209,10 @@ describe('Database Schema and Operations', () => {
           technologies: ["React"]
         }
       });
+      
+      // Verify project1 was created
+      expect(project1).not.toBeNull();
+      expect(project1.id).toBeDefined();
       
       // Wait a bit to ensure different timestamps
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -207,9 +225,19 @@ describe('Database Schema and Operations', () => {
         }
       });
 
+      // Verify project2 was created
+      expect(project2).not.toBeNull();
+      expect(project2.id).toBeDefined();
+
       // Store IDs immediately
       const project1Id = project1.id;
       const project2Id = project2.id;
+
+      // Verify both projects exist before querying
+      const verify1 = await prisma.project.findUnique({ where: { id: project1Id } });
+      const verify2 = await prisma.project.findUnique({ where: { id: project2Id } });
+      expect(verify1).not.toBeNull();
+      expect(verify2).not.toBeNull();
 
       // Query immediately using IDs to avoid any cleanup interference
       const projects = await prisma.project.findMany({
@@ -218,14 +246,6 @@ describe('Database Schema and Operations', () => {
         },
         orderBy: { createdAt: 'desc' }
       });
-
-      // If we only got one, verify both exist
-      if (projects.length < 2) {
-        const verify1 = await prisma.project.findUnique({ where: { id: project1Id } });
-        const verify2 = await prisma.project.findUnique({ where: { id: project2Id } });
-        expect(verify1).not.toBeNull();
-        expect(verify2).not.toBeNull();
-      }
 
       expect(projects.length).toBe(2);
       
